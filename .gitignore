@@ -5,3 +5,14 @@ cscope.files
 *.hex
 *.bin
 *.swp
+*.xml
+.cproject
+.project
+*.uvoptx
+*.prefs
+*.launch
+*.icf
+*.ewd
+*.ewp
+*.eww
+*.jpg
