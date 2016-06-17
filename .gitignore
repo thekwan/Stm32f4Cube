@@ -1,0 +1,7 @@
+tags
+cscope.out
+cscope.files
+*.elf
+*.hex
+*.bin
+*.swp
