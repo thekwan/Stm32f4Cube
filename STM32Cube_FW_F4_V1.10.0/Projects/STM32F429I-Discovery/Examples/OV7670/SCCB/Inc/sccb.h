@@ -10,6 +10,8 @@
 #define SCCB_ADDR_WRITE   0x42
 #define SCCB_ADDR_READ    0x43
 
+#define UART_DEBUG_MSG	1
+
 void sccb_hw_initialize  ( void );
 void sccb_hw_deinitialize( void );
 void sccb_write_reg( uint8_t reg, uint8_t data );
