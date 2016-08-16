@@ -411,6 +411,8 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
+  HAL_RCC_MCOConfig( RCC_MCO1, RCC_MCO1SOURCE_PLLCLK, RCC_MCODIV_5 );
+
   /* Activate the Over-Drive mode */
   HAL_PWREx_EnableOverDrive();
   

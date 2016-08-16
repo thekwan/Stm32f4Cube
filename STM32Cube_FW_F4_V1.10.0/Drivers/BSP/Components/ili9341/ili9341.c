@@ -169,8 +169,10 @@ void ili9341_Init(void)
   ili9341_WriteData(0xC8);
   ili9341_WriteReg(LCD_3GAMMA_EN);
   ili9341_WriteData(0x00);
+#ifndef LCD_IF_MCU_ONLY
   ili9341_WriteReg(LCD_RGB_INTERFACE);
   ili9341_WriteData(0xC2);
+#endif
   ili9341_WriteReg(LCD_DFC);
   ili9341_WriteData(0x0A);
   ili9341_WriteData(0xA7);
@@ -189,10 +191,17 @@ void ili9341_Init(void)
   ili9341_WriteData(0x00);
   ili9341_WriteData(0x01);
   ili9341_WriteData(0x3F);
+#ifdef LCD_IF_MCU_ONLY
+  ili9341_WriteReg(LCD_INTERFACE);
+  ili9341_WriteData(0x01);
+  ili9341_WriteData(0x00);
+  ili9341_WriteData(0x00);
+#else
   ili9341_WriteReg(LCD_INTERFACE);
   ili9341_WriteData(0x01);
   ili9341_WriteData(0x00);
   ili9341_WriteData(0x06);
+#endif
   
   ili9341_WriteReg(LCD_GRAM);
   LCD_Delay(200);

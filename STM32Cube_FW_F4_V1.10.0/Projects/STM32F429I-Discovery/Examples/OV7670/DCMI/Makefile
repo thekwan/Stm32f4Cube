@@ -3,14 +3,33 @@
 STLINK=/home/thekwan/Work/STM32/stlink
 
 # Put your source files here (or *.c, etc)
-SRCS=Src/main.c Src/system_stm32f4xx.c Src/stm32f4xx_it.c Src/stm32f4xx_hal_msp.c
+SRCS=Src/main.c \
+	 Src/system_stm32f4xx.c \
+	 Src/stm32f4xx_it.c \
+	 Src/stm32f4xx_hal_msp.c \
+	 Src/usart.c \
+	 Src/shell.c \
+	 Src/sccb.c \
+	 Src/ov7670_eval_camera.c
 
 # Library code
-SRCS +=stm32f4xx_hal.c stm32f4xx_hal_rcc.c stm32f4xx_hal_pwr_ex.c stm32f4xx_hal_spi.c stm32f4xx_hal_gpio.c \
-	   stm32f4xx_hal_cortex.c stm32f4xx_hal_dma.c stm32f4xx_hal_i2c.c stm32f4xx_hal_ltdc.c stm32f4xx_hal_rcc_ex.c ili9341.c
+SRCS +=stm32f4xx_hal.c \
+	   stm32f4xx_hal_rcc.c \
+	   stm32f4xx_hal_dcmi.c \
+	   stm32f4xx_hal_pwr_ex.c \
+	   stm32f4xx_hal_spi.c \
+	   stm32f4xx_hal_gpio.c \
+	   stm32f4xx_hal_uart.c \
+	   stm32f4xx_hal_cortex.c \
+	   stm32f4xx_hal_dma.c \
+	   stm32f4xx_hal_dma_ex.c \
+	   stm32f4xx_hal_i2c.c \
+	   stm32f4xx_hal_ltdc.c \
+	   stm32f4xx_hal_rcc_ex.c \
+	   ili9341.c
 
 # Binaries will be generated with this name (.elf, .bin, .hex, etc)
-PROJ_NAME=if_mcu_only
+PROJ_NAME=dcmi
 
 # Put your STM32F4 library code directory here
 #STM_COMMON=/home/thekwan/Work/STM32/Projects/STM32Cube_FW_F4_V1.10.0
@@ -22,12 +41,14 @@ STM_COMMON=../../../../..
 CC=arm-none-eabi-gcc
 OBJCOPY=arm-none-eabi-objcopy
 
-CFLAGS  = -g -O2 -Wall -TTrueSTUDIO/STM32F429I-Discovery/STM32F429ZI_FLASH.ld -specs=nosys.specs
+#CFLAGS  = -O1 -Wall -TTrueSTUDIO/STM32F429I-Discovery/STM32F429ZI_FLASH.ld -specs=nosys.specs
+CFLAGS  = -g -Wall -TTrueSTUDIO/STM32F429I-Discovery/STM32F429ZI_FLASH.ld -specs=nosys.specs
 CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 -mthumb-interwork
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 CFLAGS += -DSTM32F429xx
 CFLAGS += -DUSE_HAL_DRIVER
 CFLAGS += -DUSE_STM32F429I_DISCO
+CFLAGS += -DHAL_DCMI_MODULE_ENABLED
 
 # Include files from STM libraries
 CFLAGS += -IInc
@@ -58,7 +79,8 @@ all: proj
 
 proj: $(PROJ_NAME).elf
 
-$(PROJ_NAME).elf: $(SRCS)
+#$(PROJ_NAME).elf: $(OBJS)
+ $(PROJ_NAME).elf: $(SRCS)
 	$(CC) $(CFLAGS) $^ -o $@ 
 	$(OBJCOPY) -O ihex $(PROJ_NAME).elf $(PROJ_NAME).hex
 	$(OBJCOPY) -O binary $(PROJ_NAME).elf $(PROJ_NAME).bin
