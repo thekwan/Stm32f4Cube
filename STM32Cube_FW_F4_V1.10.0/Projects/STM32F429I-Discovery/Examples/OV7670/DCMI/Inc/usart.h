@@ -4,7 +4,7 @@
 #ifndef _UART_H_
 #define _UART_H_
 
-#define UART_MSG_BUFF_SIZE	128
+#define UART_MSG_BUFF_SIZE	64
 
 /* UART Hanlder declaration */
 extern UART_HandleTypeDef UartHandle;

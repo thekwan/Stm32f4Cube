@@ -104,7 +104,7 @@ static void stop_transmission ( void )
 	sccb_us_delay( 10 );
 	
 	HAL_GPIO_WritePin(SCCB_GPIO_PORT, SCCB_SIO_D_PIN, GPIO_PIN_SET); 
-	sccb_us_delay( 20 );
+	sccb_us_delay( 200 );
 }
 
 

@@ -134,8 +134,12 @@ static UartBuffStat EnQueue( UartMsgBuffer *buffer, uint8_t msg )
 
 static UartBuffStat DeQueue( UartMsgBuffer *buffer, uint8_t *data )
 {
-	if( buffer->count == 0 )
+	if( buffer->count == 0 ) {
+		/* To buf fix: uncleared bug (the bug is not resolved clearly yet) */
+		if( buffer->end_pointer > buffer->start_pointer )
+			buffer->end_pointer = buffer->start_pointer;
 		return EMPTY;
+	}
 
 	buffer->count--;
 	*data = buffer->queue[ buffer->end_pointer++ ];

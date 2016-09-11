@@ -2,6 +2,7 @@
 #include "shell.h"
 #include "usart.h"
 #include "sccb.h"
+#include "lcd.h"
 #include "ov7670_eval_camera.h"
 
 static void hex2str(char *str, uint8_t data) {
@@ -175,6 +176,9 @@ static int DCMI_CMD_PROC( const char *args, int max_length ) {
 	if( strncmpC( args, " snap", 5 ) == 1 ) {
 		SendMessage("DCMI snapshot: ", NEWLINE);
 		BSP_CAMERA_SnapshotStart( );
+	} else if( strncmpC( args, " cont", 5 ) == 1 ) {
+		SendMessage("DCMI continuous: ", NEWLINE);
+		BSP_CAMERA_ContinuousStart( );
 	} else if( strncmpC( args, " stop", 5 ) == 1 ) {
 		SendMessage("DCMI suspend: ", NEWLINE);
 		BSP_CAMERA_Suspend( );
@@ -189,17 +193,75 @@ static int DCMI_CMD_PROC( const char *args, int max_length ) {
 			SendMessage(str, NEWLINE);
 		}
 	} else if( strncmpC( args, " test", 5 ) == 1 ) {
-		data = 0x12345678;
-		for( i = 0 ; i < 10 ; i++ ) {
+		data = 0x00f800f8;
+		for( i = 0 ; i < DCMI_FRAME_BUFF_MAX_SIZE/2 ; i++ ) {
 			BSP_SET_FRAME_MEM( i, data );
-			data++;
 		}
+		data = 0x1f001f00;
+		for( i = (DCMI_FRAME_BUFF_MAX_SIZE/2) ; i < DCMI_FRAME_BUFF_MAX_SIZE ; i++ ) {
+			BSP_SET_FRAME_MEM( i, data );
+		}
+
+		BSP_OV7670_Init();
+#ifdef DCMI_DEBUG
+	} else if( strncmpC( args, " debugP", 7 ) == 1 ) {
+			SendMessage("DCMI Line Cnt : ", NONE);
+			hex2str(str, (uint8_t) dcmi_line_cnt);	// print address
+			SendMessage(str, NEWLINE);
+			SendMessage("DCMI VSYNC Cnt: ", NONE);
+			hex2str(str, (uint8_t) dcmi_vsync_cnt);	// print address
+			SendMessage(str, NEWLINE);
+			SendMessage("DCMI Frame Cnt: ", NONE);
+			hex2str(str, (uint8_t) dcmi_frame_cnt);	// print address
+			SendMessage(str, NEWLINE);
+			SendMessage("DCMI DMA regnd: ", NONE);
+			hex2str_32b(str, dcmi_reg_ndr);	// print address
+			SendMessage(str, NEWLINE);
+			SendMessage("DCMI Errorcode: ", NONE);
+			hex2str_32b(str, dcmi_error_code);	// print address
+			SendMessage(str, NEWLINE);
+	} else if( strncmpC( args, " debugR", 7 ) == 1 ) {
+			dcmi_line_cnt = 0;
+			dcmi_vsync_cnt = 0;
+			dcmi_frame_cnt = 0;
+			dcmi_error_code= 0;
+#endif
 	} else {
 		ret = -1;
 	}
 
 	if( ret == -1 ) {
 		SendMessage("Usage: dcmi", NEWLINE);
+	}
+
+	return ret;
+}
+
+static int LCD_CMD_PROC( const char *args, int max_length ) {
+	int ret = 0;	// 0: no error, -1: error
+	uint8_t r, g, b;
+
+	if( strncmpC( args, " color", 6 ) == 1 ) {
+		SendMessage("LCD change color: ", NEWLINE);
+		ret = str2hex( args+7 , &r, 2 );	// get red color [hex]
+		ret = str2hex( args+10, &g, 2 );	// get green color [hex]
+		ret = str2hex( args+13, &b, 2 );	// get blue color [hex]
+		lcd_init_Gram( r, g, b );
+	} else if( strncmpC( args, " dcmi", 5 ) == 1 ) {
+		SendMessage("LCD display dcmi:", NEWLINE);
+		BSP_OV7670_DISPLAY_FRAME( );
+	} else if( strncmpC( args, " dcm5", 5 ) == 1 ) {
+		SendMessage("LCD display dcmi 20 continuous running:", NEWLINE);
+		for( ret = 0 ; ret < 20 ; ret++ ) 
+			BSP_OV7670_DISPLAY_FRAME( );
+		ret = 0;
+	} else {
+		ret = -1;
+	}
+
+	if( ret == -1 ) {
+		SendMessage("Usage: lcd color [R(hex)] [G(hex)] [B(hex)]", NEWLINE);
+		SendMessage("Usage: lcd dcmi", NEWLINE);
 	}
 
 	return ret;
@@ -222,6 +284,15 @@ void shell_processing( const char *cmd , int cmd_max_length ) {
 	else if( strncmpC( cmd , "dcmi" , 4 ) == 1 ) {
 		//SendMessage("DCMI command", NEWLINE);
 		ret = DCMI_CMD_PROC( cmd+4 , cmd_max_length-4 );
+	}
+	else if( strncmpC( cmd , "lcd" , 3 ) == 1 ) {
+		//SendMessage("LCD  command", NEWLINE);
+		ret = LCD_CMD_PROC( cmd+3 , cmd_max_length-3 );
+	}
+	else if( strncmpC( cmd , "uart" , 4 ) == 1 ) {
+		//SendMessage("LCD  command", NEWLINE);
+		UartBufferClearAll();
+		ret = 0;
 	}
 	else if( strncmpC( cmd , "\r\n" , 2 ) == 1 ) {
 		SendMessage(" ", NEWLINE);

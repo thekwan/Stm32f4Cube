@@ -10,6 +10,7 @@ SRCS=Src/main.c \
 	 Src/usart.c \
 	 Src/shell.c \
 	 Src/sccb.c \
+	 Src/lcd.c \
 	 Src/ov7670_eval_camera.c
 
 # Library code
@@ -49,6 +50,9 @@ CFLAGS += -DSTM32F429xx
 CFLAGS += -DUSE_HAL_DRIVER
 CFLAGS += -DUSE_STM32F429I_DISCO
 CFLAGS += -DHAL_DCMI_MODULE_ENABLED
+CFLAGS += -DLCD_IF_MCU_ONLY
+CFLAGS += -DLCD_RGB_565
+CFLAGS += -DDCMI_DEBUG
 
 # Include files from STM libraries
 CFLAGS += -IInc
@@ -56,6 +60,7 @@ CFLAGS += -I$(STM_COMMON)/Drivers/CMSIS/Device/ST/STM32F4xx/Include
 CFLAGS += -I$(STM_COMMON)/Drivers/STM32F4xx_HAL_Driver/Inc
 CFLAGS += -I$(STM_COMMON)/Drivers/CMSIS/Include
 CFLAGS += -I$(STM_COMMON)/Drivers/BSP/STM32F429I-Discovery
+CFLAGS += -I$(STM_COMMON)/Drivers/BSP/Components/ili9341
 
 ###################################################
 

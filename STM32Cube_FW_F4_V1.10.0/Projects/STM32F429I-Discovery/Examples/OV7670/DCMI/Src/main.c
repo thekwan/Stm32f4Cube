@@ -43,6 +43,7 @@
 #include "usart.h"
 #include "shell.h"
 #include "sccb.h"
+#include "lcd.h"
 #include "ov7670_eval_camera.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
@@ -124,6 +125,10 @@ int main(void)
 	  Error_Handler();
   }
 
+  /* Configure LCD */
+  lcd_initialize( );
+  lcd_init_Gram( 0xFF, 0x0, 0x0 );
+
   BSP_LED_Off(LED3);
   BSP_LED_Off(LED4);
 
@@ -184,7 +189,8 @@ static void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLM = 8;
   RCC_OscInitStruct.PLL.PLLN = 360;
   //RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  //RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV6;
   RCC_OscInitStruct.PLL.PLLQ = 7;
   if(HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {

@@ -166,7 +166,11 @@ void ili9341_Init(void)
   ili9341_WriteReg(LCD_VCOM2);
   ili9341_WriteData(0x90);
   ili9341_WriteReg(LCD_MAC);
+#if 1	// test
+  ili9341_WriteData(0x28);
+#else
   ili9341_WriteData(0xC8);
+#endif
   ili9341_WriteReg(LCD_3GAMMA_EN);
   ili9341_WriteData(0x00);
 #ifndef LCD_IF_MCU_ONLY
@@ -178,7 +182,21 @@ void ili9341_Init(void)
   ili9341_WriteData(0xA7);
   ili9341_WriteData(0x27);
   ili9341_WriteData(0x04);
-  
+ 
+#if 1	// test
+  /* Colomn address set */
+  ili9341_WriteReg(LCD_COLUMN_ADDR);
+  ili9341_WriteData(0x00);
+  ili9341_WriteData(0x00);
+  ili9341_WriteData(0x01);
+  ili9341_WriteData(0x3F);
+  /* Page address set */
+  ili9341_WriteReg(LCD_PAGE_ADDR);
+  ili9341_WriteData(0x00);
+  ili9341_WriteData(0x00);
+  ili9341_WriteData(0x00);
+  ili9341_WriteData(0xEF);
+#else
   /* Colomn address set */
   ili9341_WriteReg(LCD_COLUMN_ADDR);
   ili9341_WriteData(0x00);
@@ -191,11 +209,17 @@ void ili9341_Init(void)
   ili9341_WriteData(0x00);
   ili9341_WriteData(0x01);
   ili9341_WriteData(0x3F);
+#endif
+
 #ifdef LCD_IF_MCU_ONLY
   ili9341_WriteReg(LCD_INTERFACE);
   ili9341_WriteData(0x01);
   ili9341_WriteData(0x00);
   ili9341_WriteData(0x00);
+#ifdef LCD_RGB_565
+  ili9341_WriteReg(LCD_PIXEL_FORMAT);
+  ili9341_WriteData(0x55);
+#endif
 #else
   ili9341_WriteReg(LCD_INTERFACE);
   ili9341_WriteData(0x01);
