@@ -373,8 +373,8 @@ int dcmi_hw_initialize( void )
 	hdma_eval.Init.MemInc              = DMA_MINC_ENABLE;
 	hdma_eval.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
 	hdma_eval.Init.MemDataAlignment    = DMA_MDATAALIGN_WORD;
-	//hdma_eval.Init.Mode                = DMA_CIRCULAR;
-	hdma_eval.Init.Mode                = DMA_NORMAL;
+	hdma_eval.Init.Mode                = DMA_CIRCULAR;
+	//hdma_eval.Init.Mode                = DMA_NORMAL;
 	hdma_eval.Init.Priority            = DMA_PRIORITY_HIGH;
 	hdma_eval.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;         
 	hdma_eval.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
