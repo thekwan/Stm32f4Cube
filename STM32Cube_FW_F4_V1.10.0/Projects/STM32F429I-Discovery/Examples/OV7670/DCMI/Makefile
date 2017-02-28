@@ -11,6 +11,7 @@ SRCS=Src/main.c \
 	 Src/shell.c \
 	 Src/sccb.c \
 	 Src/lcd.c \
+	 Src/string.c \
 	 Src/ov7670_eval_camera.c
 
 # Library code
