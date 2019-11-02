@@ -62,26 +62,41 @@ void ReceiveMessage( char *msg , int size )
     char *_msg = msg;
 	do {
 		while( DeQueue( &UartRxBuffer , (uint8_t*) msg ) == EMPTY );
-		msg++;
+
+        char data = *msg;
+        int  feedback_flag = 1;
+        /* Processing special key char (e.g. Back-space)
+         */
+        if( data == 0x8 ) {
+            msg--;
+            if( msg < _msg ) {
+                msg = _msg;
+                feedback_flag = 0;
+            }
+        }
+        else
+            msg++;
+
+
+        /* Send a received char to HOST
+         * Process special char key (back-space, enter, etc)
+         */
+        char fb_msg[4] = {0x0, 0x0, 0x0, 0x0};  // feedback msg
+        fb_msg[0] = data;
+        if( data == 0xD ) { // 'Enter': send LF(Line Feed) char
+            fb_msg[1] =0x0A;
+        }
+        else if( data == 0x08 ) {   // 'BS': send 'space' key to remove char on HOST terminal
+            fb_msg[1] = 0x20;
+            fb_msg[2] = 0x08;
+        }
+        if( feedback_flag == 1 )
+		    SendMessage( fb_msg, NONE );
+
+ 
 	} while( *(msg-1) != 0xD && (--size) > 0 );
 
 	*(msg-1) = 0x0;
-
-    /* Processing special key char (e.g. Back-space)
-     */
-    char *_msg2 = _msg;
-    char *_msg3 = _msg;
-    while( *_msg != 0x0 ) {
-        if( *_msg == 0x08 ) {
-            _msg2--;
-            if( _msg2 < _msg3 )
-                _msg2 = _msg3;
-        }
-        else
-            *_msg2++ = *_msg;
-        _msg++;
-    }
-    *_msg2 = *_msg; // last char '0x0'
 
 	return;
 }
@@ -112,26 +127,6 @@ void UART4_IRQHandler_wrap( void )
 	tmp2 = __HAL_UART_GET_IT_SOURCE( &UartHandle, UART_IT_RXNE );
 	if( (tmp1 != RESET) && (tmp2 != RESET) ) {	// RXNE interrupt processing routine
 		uint8_t data = USART_ReceiveData( &UartHandle );
-
-        /* Send a received char to HOST
-         * Process special char key (back-space, enter, etc)
-         */
-		EnQueue( &UartTxBuffer , data );
-        if( data == 0xD )   // 'Enter': send LF(Line Feed) char
-		    EnQueue( &UartTxBuffer , 0x0A );
-        else if( data == 0x08 ) {   // 'BS': send 'space' key to remove char on HOST terminal
-		    EnQueue( &UartTxBuffer , 0x20 );
-		    EnQueue( &UartTxBuffer , 0x08 );
-        }
-            
-        // ENABLE UART-TX start register
-		if( enabled_IT_TXE == 0 ) {
-			__HAL_UART_ENABLE_IT( &UartHandle, UART_IT_TXE);
-			__HAL_UART_ENABLE_IT( &UartHandle, UART_IT_TC);
-			enabled_IT_TXE = 1;
-		}
-
-
 
         /* Queuing received characters
          * if queue is overflowed, set indication flag to debug.
@@ -186,26 +181,6 @@ static UartBuffStat DeQueue( UartMsgBuffer *buffer, uint8_t *data )
 
 	return FILLED;
 }
-
-#if 0
-static UartBuffStat QueueProc( UartMsgBuffer *buffer, UartBuffOper oper )
-{
-	if( buffer->count == 0 )
-		return EMPTY;
-
-    if( oper == BS ) {
-        buffer->count--;
-        buffer->start_pointer--;
-    }
-
-	if( buffer->start_pointer >= UART_MSG_BUFF_SIZE )
-		buffer->start_pointer -= UART_MSG_BUFF_SIZE;
-    else if( buffer->start_pointer < 0 )
-		buffer->start_pointer = UART_MSG_BUFF_SIZE - 1;
-
-	return FILLED;
-}
-#endif
 
 void UartBufferClearAll( void )
 {
