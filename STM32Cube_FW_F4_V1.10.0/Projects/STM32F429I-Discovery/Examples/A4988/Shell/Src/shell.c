@@ -2,6 +2,7 @@
 #include "shell.h"
 #include "usart.h"
 #include "lcd.h"
+#include "a4988.h"
 
 #if 0
 static void hex2str(char *str, uint8_t data) {
@@ -70,6 +71,18 @@ static int strlenC(const char *str, int max_length ) {
 	return i;
 }
 #endif
+
+static int A4988_CMD_PROC( const char *args, int max_length ) {
+	if( strncmpC( args, " step", 5 ) == 1 ) {
+        int i;
+        for(i = 0 ; i < 100 ; i++) {
+            a4988_step_pulse(1000);
+        }
+        return 1;
+	}
+
+    return -1;
+}
 
 static int LED_CMD_PROC( const char *args, int max_length ) {
 
@@ -169,6 +182,9 @@ void shell_processing( const char *cmd , int cmd_max_length ) {
 	else if( strncmpC( cmd , "lcd" , 3 ) == 1 ) {
 		//SendMessage("LCD  command", NEWLINE);
 		ret = LCD_CMD_PROC( cmd+3 , cmd_max_length-3 );
+	}
+	else if( strncmpC( cmd , "a4988" , 5 ) == 1 ) {
+		ret = A4988_CMD_PROC( cmd+5 , cmd_max_length-5 );
 	}
 	else if( strncmpC( cmd , "\r\n" , 2 ) == 1 ) {
 		SendMessage(" ", NEWLINE);

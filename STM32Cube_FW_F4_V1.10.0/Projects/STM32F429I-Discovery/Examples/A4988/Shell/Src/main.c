@@ -43,6 +43,7 @@
 #include "usart.h"
 #include "shell.h"
 #include "lcd.h"
+#include "a4988.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -117,14 +118,16 @@ int main(void)
   SendMessage(" * Versoin: v0.129                        * ", NEWLINE);
   SendMessage(" ******************************************/", NEWLINE);
 
-
   /*##-2- Configure LED3 and LED4 */
   BSP_LED_Init(LED3);
   BSP_LED_Init(LED4);
   //SendMessage("LOG: LED3 H/W Initialized.", NEWLINE);
   //SendMessage("LOG: LED4 H/W Initialized.", NEWLINE);
 
-  /*##-3- LCD initialize */
+  /*##-3- Configure A4988 drivers */
+  a4988_hw_initialize();
+
+  /*##-4- LCD initialize */
   lcd_initialize();
   lcd_init_Gram( 0x3F, 0x3F, 0);
 

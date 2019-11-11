@@ -8,6 +8,7 @@ SRCS=Src/main.c \
 	 Src/stm32f4xx_it.c \
 	 Src/stm32f4xx_hal_msp.c \
 	 Src/usart.c \
+	 Src/a4988.c \
 	 Src/shell.c \
 	 Src/lcd.c
 
