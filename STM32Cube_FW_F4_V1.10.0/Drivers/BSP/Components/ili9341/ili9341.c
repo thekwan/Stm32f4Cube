@@ -166,7 +166,7 @@ void ili9341_Init(void)
   ili9341_WriteReg(LCD_VCOM2);
   ili9341_WriteData(0x90);
   ili9341_WriteReg(LCD_MAC);
-#if 1	// test
+#ifdef LCD_IF_MCU_ONLY
   ili9341_WriteData(0x28);
 #else
   ili9341_WriteData(0xC8);
@@ -183,7 +183,7 @@ void ili9341_Init(void)
   ili9341_WriteData(0x27);
   ili9341_WriteData(0x04);
  
-#if 1	// test
+#ifdef LCD_IF_MCU_ONLY
   /* Colomn address set */
   ili9341_WriteReg(LCD_COLUMN_ADDR);
   ili9341_WriteData(0x00);
